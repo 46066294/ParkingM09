@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore;
 class Parking {
 
     private static int numPlazas = 0;
+    private static int numCoches = 0;
     private static boolean[] arrayBool;// plazas
     public static Semaphore sem;
     private static int contadorLleno = 0;
@@ -26,6 +27,10 @@ class Parking {
         else return false;
     }
 
+    public void setNumCoches(int numCoches) {
+        this.numCoches = numCoches;
+    }
+
     public void crearParking(){
         for(int i = 0; i < numPlazas; i++){
             arrayBool[i] = false;
@@ -41,7 +46,7 @@ class Parking {
     }
 
     public void on(){
-        for(int i = 0; i < (numPlazas)+5; i++){// numPlazas + 5
+        for(int i = 0; i < numCoches; i++){
             Cotxe cotxe = new Cotxe(i);
             cotxe.start();
             if(cotxe.isWaiting()){
@@ -74,9 +79,14 @@ class Parking {
         Scanner input = new Scanner(System.in);
         System.out.println("Numero de plazas:");
         int p = input.nextInt();
+        System.out.println("Numero de coches:");
+        int c = input.nextInt();
+
+        input.close();
 
         Parking parking = new Parking();
         parking.setNumPlazas(p);
+        parking.setNumCoches(c);
         parking.crearParking();
         parking.crearSemaforo();
         parking.on();
