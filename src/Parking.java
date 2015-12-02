@@ -9,9 +9,12 @@ class Parking {
     public static Semaphore sem;
     private static int contadorLleno = 0;
 
+    private static int numCamiones = 0;
+
     public Parking(){
     }
 
+    //getters -- setters
     public static int getContadorLleno() {
         return contadorLleno;
     }
@@ -20,39 +23,16 @@ class Parking {
         Parking.contadorLleno--;
     }
 
-    public static boolean parkingLleno(){
-        if(contadorLleno >= numPlazas){
-            return true;
-        }
-        else return false;
-    }
-
-    public void setNumCoches(int numCoches) {
-        this.numCoches = numCoches;
-    }
-
-    public void crearParking(){
-        for(int i = 0; i < numPlazas; i++){
-            arrayBool[i] = false;
-        }
-    }
-
-    private void crearSemaforo() {
-        this.sem = new Semaphore(this.getNumPlazas());
-    }
-
     public static int getNumPlazas() {
         return numPlazas;
     }
 
-    public void on(){
-        for(int i = 0; i < numCoches; i++){
-            Cotxe cotxe = new Cotxe(i);
-            cotxe.start();
-            if(cotxe.isWaiting()){
-                contadorLleno++;
-            }
-        }
+    public void setNumCamiones(int numCamiones) {
+        this.numCamiones = numCamiones;
+    }
+
+    public void setNumCoches(int numCoches) {
+        this.numCoches = numCoches;
     }
 
     public static boolean[] getArrayBool() {
@@ -64,9 +44,55 @@ class Parking {
         this.arrayBool = new boolean[numPlazas];// plazas
     }
 
-    public static boolean hayPlazasDisponibles(boolean[] arrayBool){
+    public void crearParking(){
+        for(int i = 0; i < numPlazas; i++){
+            arrayBool[i] = false;
+        }
+    }
+
+    public static boolean parkingLleno(){
+        if(contadorLleno >= numPlazas){
+            return true;
+        }
+        else return false;
+    }
+
+    private void crearSemaforo() {
+        this.sem = new Semaphore(this.getNumPlazas());
+    }
+
+
+    public void on(){
+        int contVehiculos = 0;
+        for(int i = 0; i < numCoches+numCamiones; i++){
+            if(contVehiculos < numCoches){
+                contVehiculos++;
+                Cotxe cotxe = new Cotxe(i);
+                cotxe.start();
+                if(cotxe.isWaiting()){
+                    contadorLleno++;
+                }
+            }
+            else{
+                Camio camio = new Camio(i);
+                camio.start();
+            }
+
+        }
+    }
+
+    public static boolean hayPlazasDisponiblesCoches(boolean[] arrayBool){
         for(int i = 0; i < arrayBool.length; i++){
             if(arrayBool[i] == false){//false = libre        true = ocupada
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hayPlazasDisponiblesCamiones(boolean[] arrayBool){
+        for(int i = 0; i < arrayBool.length; i++){
+            if(arrayBool[i] == false && ((i+1) <= arrayBool.length) && arrayBool[i+1] == false){//false = libre        true = ocupada
                 return true;
             }
         }
@@ -81,12 +107,15 @@ class Parking {
         int p = input.nextInt();
         System.out.println("Numero de coches:");
         int c = input.nextInt();
+        System.out.println("Numero de camiones:");
+        int t = input.nextInt();
 
         input.close();
 
         Parking parking = new Parking();
         parking.setNumPlazas(p);
         parking.setNumCoches(c);
+        parking.setNumCamiones(t);
         parking.crearParking();
         parking.crearSemaforo();
         parking.on();

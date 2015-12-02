@@ -43,7 +43,7 @@ public class Cotxe extends Thread{
                 e.printStackTrace();
             }
 
-            if(Parking.hayPlazasDisponibles(Parking.getArrayBool())){
+            if(Parking.hayPlazasDisponiblesCoches(Parking.getArrayBool())){
                 if(waiting == true) {
                     waiting = false;
                 }
