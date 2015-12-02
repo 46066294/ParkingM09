@@ -1,21 +1,21 @@
 import java.util.Random;
 
 /**
- * Representa un vehiculo: coche
+ * Representa un vehiculo: camion
  */
-public class Cotxe extends Thread{
+public class Camio extends Thread{
 
     private int id;
-    private int plazaOcupada;
+    private int plaza1Ocupada;
+    private int plaza2Ocupada;
     private boolean waiting = false;
 
-    public Cotxe(int numCotxe) {
-        this.id = numCotxe;
+    public Camio(int numCamio) {
+        this.id = numCamio;
 
     }
-
     /**
-     * Funcion que indica si el coche esta
+     * Funcion que indica si el camion esta
      * en cola esperando su turno
      * @return
      */
@@ -24,17 +24,19 @@ public class Cotxe extends Thread{
     }
 
     /**
-     * Funcion que facilita una plaza del
-     * parking vacia a un coche
+     * Funcion que facilita 2 plazas del
+     * parking vacias a un camion
      * @param arrayBool todas las plazas del parking
      * @return plaza de parking en cuestion
      *          (999 si no la hay)
      */
     public int darPlazaLibre(boolean[] arrayBool){
         for(int i = 0; i < arrayBool.length; i++){
-            if(!arrayBool[i]){//si la plaza esta libre
-                plazaOcupada = i;
-                arrayBool[plazaOcupada] = true;
+            if(!arrayBool[i] && !arrayBool[i+1]){//si las plazas estan libres
+                plaza1Ocupada = i;
+                plaza2Ocupada = i+1;
+                arrayBool[plaza1Ocupada] = true;
+                arrayBool[plaza2Ocupada] = true;
                 return i;
             }
         }
@@ -47,14 +49,15 @@ public class Cotxe extends Thread{
      * @param arrayBool
      */
     public void desocuparPlaza(boolean[] arrayBool){
-        arrayBool[plazaOcupada] = false;
+        arrayBool[plaza1Ocupada] = false;
+        arrayBool[plaza2Ocupada] = false;
     }
 
 
     /**
-     * Tarea del coche:
-     * entrar en el parking y ocupar una plaza
-     * durante un tiempo. Despues la abandona, sale del
+     * Tarea del camion:
+     * entrar en el parking y ocupar 2 plazas
+     * durante un tiempo. Despues las abandona, sale del
      * parking y vuelve a repetir el proceso
      */
     @Override
@@ -69,29 +72,32 @@ public class Cotxe extends Thread{
                 e.printStackTrace();
             }
 
-            if(Parking.hayPlazasDisponiblesCoches(Parking.getArrayBool())){
+            if(Parking.hayPlazasDisponiblesCamiones(Parking.getArrayBool())){
                 if(waiting == true) {
                     waiting = false;
                 }
 
                 try {
-                    this.darPlazaLibre(Parking.getArrayBool());//ocupar plaza
+                    this.darPlazaLibre(Parking.getArrayBool());//ocupar plazas
                     Parking.sem.acquire();
-                    System.out.println("Plaza::" + plazaOcupada + ":: OCUPADA por: coche" + id +
+                    Parking.sem.acquire();
+                    System.out.println("Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: OCUPADA por: camion" + id +
                             " Plazas libres >> " + Parking.sem.availablePermits());
 
 
-                    Thread.sleep(1000);//tiempo de coche aparcado
+                    Thread.sleep(1000);//tiempo de camion aparcado
 
                     if(Parking.parkingLleno()){
-                        if(Parking.getContadorLleno() == Parking.getNumPlazas()){//condicion para que pueda entrar otro coche
+                        if(Parking.getContadorLleno() == Parking.getNumPlazas()){//condicion para que pueda entrar otro camion
                             notify();
                         }
                         Parking.setContadorLleno();
+                        Parking.setContadorLleno();
                     }
                     Parking.sem.release();
+                    Parking.sem.release();
                     this.desocuparPlaza(Parking.getArrayBool());//desocupar plaza
-                    System.out.println("Plaza::" + plazaOcupada + ":: LIBRE" +
+                    System.out.println("Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: LIBRES" +
                             " Plazas disponibles >> " + Parking.sem.availablePermits());
 
 
@@ -101,7 +107,7 @@ public class Cotxe extends Thread{
             }
             else{
                 try {
-                    System.out.println("...PARKING LLENO coche" + id + " en cola. Plazas libres: "+
+                    System.out.println("...PARKING LLENO PARA CAMIONES -- camion" + id + " en cola. Plazas libres: "+
                             Parking.sem.availablePermits());
                     waiting = true;
 
