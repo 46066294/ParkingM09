@@ -77,11 +77,11 @@ public class Cotxe extends Thread{
                 try {
                     this.darPlazaLibre(Parking.getArrayBool());//ocupar plaza
                     Parking.sem.acquire();
-                    System.out.println("Plaza::" + plazaOcupada + ":: OCUPADA por: coche" + id +
+                    System.out.println("ENTRADA COCHE-->Plaza::" + plazaOcupada + ":: OCUPADA por: coche" + id +
                             " Plazas libres >> " + Parking.sem.availablePermits());
 
 
-                    Thread.sleep(1000);//tiempo de coche aparcado
+                    Thread.sleep(rnd.nextInt(1000));//tiempo de coche aparcado
 
                     if(Parking.parkingLleno()){
                         if(Parking.getContadorLleno() == Parking.getNumPlazas()){//condicion para que pueda entrar otro coche
@@ -91,7 +91,7 @@ public class Cotxe extends Thread{
                     }
                     Parking.sem.release();
                     this.desocuparPlaza(Parking.getArrayBool());//desocupar plaza
-                    System.out.println("Plaza::" + plazaOcupada + ":: LIBRE" +
+                    System.out.println("SALIDA COCHE-->Plaza::" + plazaOcupada + ":: LIBRE" +
                             " Plazas disponibles >> " + Parking.sem.availablePermits());
 
 

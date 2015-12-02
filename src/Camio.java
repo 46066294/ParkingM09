@@ -81,11 +81,11 @@ public class Camio extends Thread{
                     this.darPlazaLibre(Parking.getArrayBool());//ocupar plazas
                     Parking.sem.acquire();
                     Parking.sem.acquire();
-                    System.out.println("Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: OCUPADA por: camion" + id +
+                    System.out.println("ENTRADA CAMION-->Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: OCUPADA por: camion" + id +
                             " Plazas libres >> " + Parking.sem.availablePermits());
 
 
-                    Thread.sleep(1000);//tiempo de camion aparcado
+                    Thread.sleep(rnd.nextInt(1000));//tiempo de camion aparcado
 
                     if(Parking.parkingLleno()){
                         if(Parking.getContadorLleno() == Parking.getNumPlazas()){//condicion para que pueda entrar otro camion
@@ -97,7 +97,7 @@ public class Camio extends Thread{
                     Parking.sem.release();
                     Parking.sem.release();
                     this.desocuparPlaza(Parking.getArrayBool());//desocupar plaza
-                    System.out.println("Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: LIBRES" +
+                    System.out.println("SALIDA CAMION-->Plaza::" + plaza1Ocupada + " y " + plaza2Ocupada + ":: LIBRES" +
                             " Plazas disponibles >> " + Parking.sem.availablePermits());
 
 
